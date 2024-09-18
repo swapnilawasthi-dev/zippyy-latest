@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, ScrollView, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, ScrollView, Image, TouchableOpacity, StatusBar } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { Colors } from '@/constants/Colors';
@@ -28,12 +28,12 @@ export default function HomeScreen() {
       <ThemedView style={styles.header}>
         <ThemedText type="title">FoodApp</ThemedText>
         <TouchableOpacity>
-          <Ionicons name="cart-outline" size={24} color={Colors[colorScheme].text} />
+          <Ionicons name="cart-outline" size={24} color={Colors[colorScheme ?? "light"].text} />
         </TouchableOpacity>
       </ThemedView>
 
       <ThemedView style={styles.searchBar}>
-        <Ionicons name="search-outline" size={20} color={Colors[colorScheme].text} />
+        <Ionicons name="search-outline" size={20} color={Colors[colorScheme ?? "light"].text} />
         <ThemedText style={styles.searchText}>Search for restaurants or foods</ThemedText>
       </ThemedView>
 
@@ -71,6 +71,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop:StatusBar.currentHeight,
   },
   header: {
     flexDirection: 'row',

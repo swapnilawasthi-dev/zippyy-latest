@@ -1,11 +1,17 @@
 import React, { useState } from "react";
-import { StyleSheet, TextInput, TouchableOpacity, Alert, StatusBar } from "react-native";
+import {
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+  StatusBar,
+} from "react-native";
 import { useRouter } from "expo-router";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { Colors } from "@/constants/Colors";
 import { useColorScheme } from "@/hooks/useColorScheme";
-import { validateMobileNumber } from "@/utils/validation"; // Assume this function exists
+import { validateMobileNumber } from "@/utils/validation";
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -16,7 +22,7 @@ export default function LoginScreen() {
     if (validateMobileNumber(mobileNumber)) {
       // Navigate to OTP screen, passing the mobile number as a parameter
       router.push({
-        pathname: "/otp",
+        pathname: "/authentication",
         params: { mobileNumber },
       });
     } else {
@@ -34,34 +40,43 @@ export default function LoginScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <ThemedText onPress={handleSkip} style={styles.skipText}>Skip</ThemedText>
+      <ThemedView style={styles.skipContainer}>
+        <ThemedText onPress={handleSkip} style={styles.skipText}>
+          Skip
+        </ThemedText>
+      </ThemedView>
       <ThemedView style={styles.content}>
         <ThemedText type="title" style={styles.title}>
           Log in or sign up
         </ThemedText>
-        <TextInput
-          style={[
-            styles.input,
-            {
-              color: Colors[colorScheme ?? "light"].text,
-              borderColor: Colors[colorScheme ?? "light"].text,
-            },
-          ]}
-          placeholder="Enter your mobile number"
-          placeholderTextColor={Colors[colorScheme ?? "light"].tabIconDefault}
-          keyboardType="phone-pad"
-          value={mobileNumber}
-          onChangeText={setMobileNumber}
-        />
-        <TouchableOpacity
-          style={[
-            styles.button,
-            { backgroundColor: Colors[colorScheme ?? "light"].tint },
-          ]}
-          onPress={handleLogin}
-        >
-          <ThemedText style={styles.buttonText}>Login</ThemedText>
+        <ThemedView style={styles.mobileContainer}>
+          <ThemedText style={styles.mobileText}>+91</ThemedText>
+          <ThemedView style={styles.verticalLine} />
+          <TextInput
+            style={[styles.input]}
+            placeholder="Enter your mobile number"
+            placeholderTextColor={Colors[colorScheme ?? "light"].tabIconDefault}
+            keyboardType="phone-pad"
+            value={mobileNumber}
+            cursorColor={"#22222280"}
+            onChangeText={setMobileNumber}
+          />
+        </ThemedView>
+
+        <TouchableOpacity style={[styles.button]} onPress={handleLogin}>
+          <ThemedText style={styles.buttonText}>Continue</ThemedText>
         </TouchableOpacity>
+        <ThemedView style={styles.termsContainer}>
+          <ThemedText style={styles.termsText}>
+            By continuing, you agree to our{" "}
+            <ThemedText style={styles.termsTextLink}>
+              Terms of Service{" "}
+            </ThemedText>
+            and{" "}
+            <ThemedText style={styles.termsTextLink}>Privacy Policy</ThemedText>
+            .
+          </ThemedText>
+        </ThemedView>
       </ThemedView>
     </ThemedView>
   );
@@ -70,57 +85,104 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop:StatusBar.currentHeight,
+    paddingTop: StatusBar.currentHeight,
     backgroundColor: "#FFD504",
   },
   content: {
-    height: "65%",
+    height: "60%",
     position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
     alignItems: "center",
-    padding: 20,
+    paddingHorizontal: 36,
+    paddingVertical: 30,
     backgroundColor: "white",
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    borderTopLeftRadius: 40,
+    borderTopRightRadius: 40,
   },
-  skipText: {
+  skipContainer: {
     position: "absolute",
-    top: 50,
+    top: 60,
     right: 20,
     backgroundColor: "#22222280",
-    padding: 10,
     borderRadius: 16,
+    height: 33,
+    width: 45,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  skipText: {
+    fontSize: 14,
+    fontWeight: 600,
+    color: "white",
+    lineHeight: 18,
   },
   title: {
     fontSize: 24,
-    marginBottom: 20,
+    color: "#222222",
+    marginBottom: 24,
   },
   subtitle: {
     fontSize: 16,
     marginBottom: 20,
   },
-  input: {
-    width: "100%",
-    height: 50,
-    borderWidth: 1,
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    marginBottom: 20,
-    fontSize: 16,
-  },
   button: {
     width: "100%",
     height: 50,
-    borderRadius: 5,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 20,
+    backgroundColor: "#007BFF",
+    borderRadius: 20,
   },
   buttonText: {
-    color: "black",
-    fontSize: 18,
+    color: "white",
+    fontSize: 16,
     fontWeight: "bold",
+  },
+  termsContainer: {
+    backgroundColor: "white",
+    alignItems: "center",
+    paddingHorizontal: 16,
+  },
+  termsText: {
+    fontSize: 14,
+    color: "#000",
+    textAlign: "center",
+  },
+  termsTextLink: {
+    color: "#007BFF",
+    fontSize: 14,
+    textDecorationLine: "underline",
+  },
+  mobileContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#F1F1F1",
+    borderRadius: 30,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    marginBottom: 30,
+    height: 50,
+  },
+  verticalLine: {
+    height: "100%",
+    width: 1,
+    backgroundColor: "#000",
+    marginHorizontal: 10,
+  },
+  input: {
+    width: "86%",
+    height: 50,
+    paddingHorizontal: 5,
+    fontSize: 16,
+    color: "#4A4A4A",
+  },
+  mobileText: {
+    fontSize: 16,
+    fontWeight: 400,
+    color: "#4A4A4A",
   },
 });
