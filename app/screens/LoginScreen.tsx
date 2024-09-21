@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
   },
   skipContainer: {
     position: "absolute",
-    top: 60,
+    top: 70,
     right: 20,
     backgroundColor: "#22222280",
     borderRadius: 16,

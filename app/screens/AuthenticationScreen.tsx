@@ -1,54 +1,85 @@
-import { useState } from 'react';
-import { Alert, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useState, useEffect } from "react";
+import {
+  Alert,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  StatusBar,
+  Platform,
+} from "react-native";
+import { useRouter, useLocalSearchParams } from "expo-router";
 
-import { ThemedView } from '@/components/ThemedView';
-import { ThemedText } from '@/components/ThemedText';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { ThemedView } from "@/components/ThemedView";
+import { ThemedText } from "@/components/ThemedText";
+import { Colors } from "@/constants/Colors";
+import { useColorScheme } from "@/hooks/useColorScheme";
+import { Ionicons } from "@expo/vector-icons";
+import OTPField from "@/components/OTPField";
 
 export default function AuthenticationScreen() {
   const router = useRouter();
   const { mobileNumber } = useLocalSearchParams<{ mobileNumber: string }>();
-  const [otp, setOtp] = useState('');
+  const [otp, setOtp] = useState("");
+  const [countdown, setCountdown] = useState(20);
+  const [canResend, setCanResend] = useState(false);
   const colorScheme = useColorScheme();
 
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (countdown > 0) {
+      timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+    } else {
+      setCanResend(true);
+    }
+    return () => clearTimeout(timer);
+  }, [countdown]);
+
+  const handleResend = () => {
+    if (canResend) {
+      // Resend Logic
+      setCountdown(20);
+      setCanResend(false);
+    }
+  };
+
   const handleVerifyOTP = () => {
-    // TODO: Implement OTP verification logic
-    if (otp.length === 6) {
-      // For now, we'll just simulate a successful verification
-      Alert.alert('Success', 'OTP verified successfully!', [
-        { text: 'OK', onPress: () => router.replace('/home') }
+    if (otp.length === 4) {
+      Alert.alert("Success", "OTP verified successfully!", [
+        { text: "OK", onPress: () => router.replace("/home") },
       ]);
     } else {
-      Alert.alert('Invalid OTP', 'Please enter a valid 6-digit OTP');
+      Alert.alert("Invalid OTP", "Please enter a valid 4-digit OTP");
     }
   };
 
   return (
     <ThemedView style={styles.container}>
-      <ThemedText type="title" style={styles.title}>Verify OTP</ThemedText>
-      <ThemedText style={styles.subtitle}>
-        Enter the 6-digit code sent to {mobileNumber}
+      <ThemedView style={styles.backContainer}>
+        <ThemedText onPress={() => router.back()}>
+          <Ionicons name="chevron-back" size={24} color="white" />
+        </ThemedText>
+      </ThemedView>
+      <ThemedText type="title" style={styles.title}>
+        Verification
       </ThemedText>
-      <TextInput
-        style={[
-          styles.input,
-          { color: Colors[colorScheme ?? 'light'].text, borderColor: Colors[colorScheme ?? 'light'].text }
-        ]}
-        placeholder="Enter OTP"
-        placeholderTextColor={Colors[colorScheme ?? 'light'].tabIconDefault}
-        keyboardType="number-pad"
-        maxLength={6}
-        value={otp}
-        onChangeText={setOtp}
-      />
-      <TouchableOpacity
-        style={[styles.button, { backgroundColor: Colors[colorScheme ?? 'light'].tint }]}
-        onPress={handleVerifyOTP}
-      >
-        <ThemedText style={styles.buttonText}>Verify OTP</ThemedText>
+      <ThemedText style={styles.subtitle}>
+        Enter OTP sent to {mobileNumber}
+      </ThemedText>
+      <OTPField value={otp} setValue={(value: any) => setOtp(value)} />
+
+      <TouchableOpacity style={[styles.button]} onPress={handleVerifyOTP}>
+        <ThemedText style={styles.buttonText}>Verify</ThemedText>
       </TouchableOpacity>
+      <ThemedText style={styles.subtitle}>
+        Didn't receive the OTP?{" "}
+        <ThemedText
+          style={[styles.link, !canResend && styles.disabledLink]}
+          onPress={handleResend}
+        >
+          Resend
+        </ThemedText>{" "}
+        {countdown > 0 ? `in ${countdown} seconds` : ""}
+      </ThemedText>
     </ThemedView>
   );
 }
@@ -56,21 +87,25 @@ export default function AuthenticationScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
+    padding: 40,
+    backgroundColor: "white",
+    paddingTop: StatusBar.currentHeight,
   },
   title: {
+    marginTop: 100,
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: 600,
     marginBottom: 20,
+    color: "#222222",
+    textAlign: "center",
   },
   subtitle: {
     marginBottom: 20,
-    textAlign: 'center',
+    textAlign: "center",
+    color: "#222222",
   },
   input: {
-    width: '100%',
+    width: "100%",
     height: 40,
     borderWidth: 1,
     borderRadius: 5,
@@ -78,14 +113,36 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   button: {
-    width: '100%',
+    width: "100%",
     height: 40,
-    borderRadius: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 20,
+    backgroundColor: "#007BFF",
+    borderRadius: 20,
   },
   buttonText: {
-    color: 'white',
-    fontWeight: 'bold',
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  link: {
+    color: "#007BFF",
+    textDecorationLine: "underline",
+  },
+  backContainer: {
+    position: "absolute",
+    top: 70,
+    left: 20,
+    backgroundColor: "#22222280",
+    borderRadius: 16,
+    height: 33,
+    width: 45,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  disabledLink: {
+    color: "#AAAAAA",
+    // textDecorationLine: "none",
   },
 });
