@@ -35,7 +35,7 @@ export default function LoginScreen() {
   };
 
   const handleSkip = () => {
-    router.replace("/home");
+    router.replace("/(tabs)");
   };
 
   return (

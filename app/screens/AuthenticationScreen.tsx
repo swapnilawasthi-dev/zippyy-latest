@@ -45,7 +45,7 @@ export default function AuthenticationScreen() {
   const handleVerifyOTP = () => {
     if (otp.length === 4) {
       Alert.alert("Success", "OTP verified successfully!", [
-        { text: "OK", onPress: () => router.replace("/home") },
+        { text: "OK", onPress: () => router.replace("/(tabs)") },
       ]);
     } else {
       Alert.alert("Invalid OTP", "Please enter a valid 4-digit OTP");
